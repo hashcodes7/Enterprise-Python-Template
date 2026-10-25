@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Development Environment Service
+  backend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["python", "run.py", "--env", "dev", "--reload"]
+    environment:
+      - APP_ENV=dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    profiles: ["dev"]
+
+  # Production Environment Service
+  backend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["python", "run.py", "--env", "prod"]
+    environment:
+      - APP_ENV=prod
+    ports:
+      - "8000:8000"
+    profiles: ["prod"]
