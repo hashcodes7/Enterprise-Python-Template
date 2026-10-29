@@ -3,8 +3,9 @@ Enterprise Health & Readiness Endpoints.
 """
 
 import time
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 from app.api.deps import SettingsDep
+
 from app.schemas.base import StandardResponse
 from app.schemas.health import HealthResponse, ReadinessResponse
 
@@ -37,14 +38,13 @@ async def liveness_probe(settings: SettingsDep) -> StandardResponse[HealthRespon
     response_model=StandardResponse[ReadinessResponse],
     status_code=status.HTTP_200_OK,
     summary="Service Readiness Probe",
-    description="Verifies operational readiness across database, cache, and multi-agent systems.",
+    description="Verifies operational readiness across database, cache, and backend systems.",
 )
 async def readiness_probe(settings: SettingsDep) -> StandardResponse[ReadinessResponse]:
     checks = {
         "configuration": "ready",
-        "database": f"connected ({settings.APP_ENV})",
-        "redis_cache": f"connected ({settings.APP_ENV})",
-        "agent_engine": f"ready (max_workers={settings.AGENT_MAX_CONCURRENT_TASKS})",
+        "database": f"configured ({settings.APP_ENV})",
+        "cache": f"configured ({settings.APP_ENV})",
     }
     data = ReadinessResponse(
         ready=True,

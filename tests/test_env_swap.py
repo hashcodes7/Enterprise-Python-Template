@@ -26,9 +26,6 @@ def test_dev_environment_variables():
     assert dev_settings.HOST == "127.0.0.1"
     assert dev_settings.RELOAD is True
     assert "sqlite" in dev_settings.DATABASE_URL
-    assert dev_settings.AGENT_MAX_CONCURRENT_TASKS == 5
-    assert dev_settings.AGENT_MOCK_EXTERNAL_APIS is True
-    assert dev_settings.ENABLE_AGENT_TELEMETRY is False
     assert dev_settings.is_development is True
     assert dev_settings.is_production is False
 
@@ -38,15 +35,12 @@ def test_prod_environment_variables():
     prod_settings = load_settings_for_env(EnvironmentType.PROD)
 
     assert prod_settings.APP_ENV == "prod"
-    assert "Multi-Agent Business Operations Platform" == prod_settings.APP_NAME
+    assert "Enterprise FastAPI Backend" == prod_settings.APP_NAME
     assert prod_settings.DEBUG is False
     assert prod_settings.LOG_LEVEL == "INFO"
     assert prod_settings.HOST == "0.0.0.0"
     assert prod_settings.RELOAD is False
     assert "postgresql" in prod_settings.DATABASE_URL
-    assert prod_settings.AGENT_MAX_CONCURRENT_TASKS == 50
-    assert prod_settings.AGENT_MOCK_EXTERNAL_APIS is False
-    assert prod_settings.ENABLE_AGENT_TELEMETRY is True
     assert prod_settings.is_development is False
     assert prod_settings.is_production is True
 
@@ -61,7 +55,6 @@ def test_environment_swapping_in_memory():
     dev_settings = reload_settings()
     assert dev_settings.APP_ENV == "dev"
     assert dev_settings.DEBUG is True
-    assert dev_settings.AGENT_MAX_CONCURRENT_TASKS == 5
 
     # 2. Swap to PROD
     set_active_environment(EnvironmentType.PROD)
@@ -71,5 +64,4 @@ def test_environment_swapping_in_memory():
     prod_settings = reload_settings()
     assert prod_settings.APP_ENV == "prod"
     assert prod_settings.DEBUG is False
-    assert prod_settings.AGENT_MAX_CONCURRENT_TASKS == 50
     assert "postgresql" in prod_settings.DATABASE_URL

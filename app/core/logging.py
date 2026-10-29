@@ -4,7 +4,6 @@ Enterprise Structured Logging System.
 
 import logging
 import sys
-from typing import Optional
 
 
 class EnterpriseFormatter(logging.Formatter):
@@ -67,7 +66,7 @@ def log_startup_banner(
     host: str,
     port: int,
     debug: bool,
-    logger: Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
 ) -> None:
     """Prints a clear enterprise startup banner indicating the active environment."""
     log = logger or logging.getLogger("app")

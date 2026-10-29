@@ -23,7 +23,8 @@ def test_health_ready_endpoint(client: TestClient):
     json_data = response.json()
     assert json_data["success"] is True
     assert json_data["data"]["ready"] is True
-    assert "agent_engine" in json_data["data"]["checks"]
+    assert "database" in json_data["data"]["checks"]
+    assert "cache" in json_data["data"]["checks"]
 
 
 def test_system_config_endpoint(client: TestClient):
@@ -35,8 +36,8 @@ def test_system_config_endpoint(client: TestClient):
     data = json_data["data"]
     assert data["environment"] == "dev"
     assert data["debug"] is True
-    # Verify sensitive data is masked
-    assert "******" in data["llm_api_key_masked"]
+    assert "database_url_masked" in data
+    assert "redis_url_masked" in data
     assert ".env.dev" in data["env_file_source"]
 
 
@@ -55,7 +56,7 @@ def test_runtime_env_switch_endpoint(client: TestClient):
     config_data = config_res.json()["data"]
     assert config_data["environment"] == "prod"
     assert config_data["debug"] is False
-    assert config_data["agent_max_concurrent_tasks"] == 50
+    assert "backend_prod" in config_data["database_url_masked"]
 
     # 3. Switch back to dev
     switch_back_res = client.post("/api/v1/system/env-switch", json={"environment": "dev"})

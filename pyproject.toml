@@ -1,32 +1,48 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "multi-agent-business-operations-platform"
+name = "enterprise-fastapi-backend"
 version = "1.0.0"
-description = "Enterprise Multi-Agent Business Operations Platform Backend"
+description = "Enterprise Production-Ready FastAPI Backend"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [
     { name = "Enterprise Engineering Team" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Framework :: FastAPI",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
 ]
 
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "8.0"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short -W ignore::DeprecationWarning"
 pythonpath = ["."]
+
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-select = ["E", "F", "I", "N", "W"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "UP",     # pyupgrade (enforce modern Python 3.12 syntax)
+    "B",      # flake8-bugbear
+    "ASYNC",  # flake8-async
+    "RUF",    # Ruff-specific rules
+    "N",      # pep8-naming
+]
 ignore = []
+

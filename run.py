@@ -23,25 +23,25 @@ from app.core.environment import (
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run Enterprise Multi-Agent Business Operations Backend."
+        description="Run Enterprise Production-Ready FastAPI Backend (Python 3.12+)."
     )
     parser.add_argument(
         "--env",
         choices=["dev", "prod"],
         default=None,
-        help="Target environment (overrides app/core/environment.py)",
+        help="Target runtime environment (overrides app/core/environment.py)",
     )
     parser.add_argument(
         "--host",
         type=str,
         default=None,
-        help="Host interface to bind (defaults to config)",
+        help="Host interface to bind (defaults to active config)",
     )
     parser.add_argument(
         "--port",
         type=int,
         default=None,
-        help="Port to listen on (defaults to config)",
+        help="Port to listen on (defaults to active config)",
     )
     parser.add_argument(
         "--reload",
@@ -70,6 +70,7 @@ def main() -> None:
     reload = args.reload if args.reload is not None else settings.RELOAD
 
     print(f"\n[CLI] Starting {settings.APP_NAME}")
+    print(f"[CLI] Python Runtime: {sys.version.split()[0]} (Modern Python 3.12+ Architecture)")
     print(f"[CLI] Environment: {active_env.value.upper()} (Source: {env_file})")
     print(f"[CLI] Listening on: http://{host}:{port} (Reload: {reload})\n")
 
@@ -84,3 +85,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

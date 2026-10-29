@@ -2,7 +2,6 @@
 System & Environment Configuration Schemas.
 """
 
-from typing import List
 from pydantic import BaseModel, Field
 
 
@@ -19,15 +18,10 @@ class SystemConfigResponse(BaseModel):
     log_level: str = Field(..., description="Logging verbosity")
     host: str = Field(..., description="Bound host")
     port: int = Field(..., description="Bound port")
-    cors_origins: List[str] = Field(..., description="Allowed origins")
+    cors_origins: list[str] = Field(..., description="Allowed origins")
     database_url_masked: str = Field(..., description="Masked database URI")
     redis_url_masked: str = Field(..., description="Masked Redis URI")
-    agent_max_concurrent_tasks: int = Field(..., description="Agent task concurrency limit")
-    agent_execution_timeout_seconds: int = Field(..., description="Agent timeout ceiling")
-    agent_mock_external_apis: bool = Field(..., description="External mock flag")
-    enable_agent_telemetry: bool = Field(..., description="Telemetry flag")
-    llm_model: str = Field(..., description="Active reasoning LLM")
-    llm_api_key_masked: str = Field(..., description="Masked LLM API Key")
+
 
 
 class EnvSwitchRequest(BaseModel):

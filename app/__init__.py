@@ -1,5 +1,5 @@
 """
-Multi-Agent Business Operations Platform Application Root.
+Enterprise FastAPI Backend Application Root.
 """
 
 from app.main import app, create_application

@@ -6,7 +6,7 @@ Standardizes RFC 7807 problem details across all platform API responses.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -23,7 +23,7 @@ class AppException(Exception):
         message: str,
         status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
         code: str = "INTERNAL_SERVER_ERROR",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message)
         self.message = message
@@ -33,7 +33,7 @@ class AppException(Exception):
 
 
 class NotFoundException(AppException):
-    def __init__(self, message: str = "Resource not found", details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str = "Resource not found", details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             status_code=status.HTTP_404_NOT_FOUND,
@@ -43,7 +43,7 @@ class NotFoundException(AppException):
 
 
 class UnauthorizedException(AppException):
-    def __init__(self, message: str = "Authentication required", details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str = "Authentication required", details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,7 +53,7 @@ class UnauthorizedException(AppException):
 
 
 class ForbiddenException(AppException):
-    def __init__(self, message: str = "Access forbidden", details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str = "Access forbidden", details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             status_code=status.HTTP_403_FORBIDDEN,
@@ -63,7 +63,7 @@ class ForbiddenException(AppException):
 
 
 class ValidationException(AppException):
-    def __init__(self, message: str = "Validation failed", details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str = "Validation failed", details: dict[str, Any] | None = None):
         super().__init__(
             message=message,
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

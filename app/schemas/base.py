@@ -2,24 +2,22 @@
 Enterprise Base Schemas.
 """
 
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any
 from pydantic import BaseModel, Field
-
-DataT = TypeVar("DataT")
 
 
 class ErrorDetail(BaseModel):
     code: str = Field(..., description="Machine-readable error code")
     message: str = Field(..., description="Human-readable error description")
-    details: Optional[dict[str, Any]] = Field(default_factory=dict, description="Contextual validation/error data")
-    path: Optional[str] = Field(default=None, description="Request path")
+    details: dict[str, Any] = Field(default_factory=dict, description="Contextual validation/error data")
+    path: str | None = Field(default=None, description="Request path")
 
 
-class StandardResponse(BaseModel, Generic[DataT]):
+class StandardResponse[DataT](BaseModel):
     """Unified API response wrapper for enterprise consistency."""
     success: bool = Field(default=True, description="Indicates request success status")
-    data: Optional[DataT] = Field(default=None, description="Response payload")
-    error: Optional[ErrorDetail] = Field(default=None, description="Error block if success is False")
+    data: DataT | None = Field(default=None, description="Response payload")
+    error: ErrorDetail | None = Field(default=None, description="Error block if success is False")
 
 
 class PaginationMeta(BaseModel):
@@ -29,6 +27,7 @@ class PaginationMeta(BaseModel):
     total_pages: int = Field(default=0, ge=0)
 
 
-class PaginatedResponse(BaseModel, Generic[DataT]):
-    items: List[DataT] = Field(default_factory=list)
+class PaginatedResponse[DataT](BaseModel):
+    items: list[DataT] = Field(default_factory=list)
     meta: PaginationMeta
+

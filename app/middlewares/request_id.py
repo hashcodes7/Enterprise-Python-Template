@@ -1,6 +1,6 @@
 """
 Correlation & Request ID Middleware.
-Attaches a unique UUID to each incoming request for end-to-end tracing across agents.
+Attaches a unique UUID to each incoming request for end-to-end distributed tracing.
 """
 
 import uuid

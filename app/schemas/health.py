@@ -2,7 +2,6 @@
 Health and Diagnostic Schemas.
 """
 
-from typing import Dict
 from pydantic import BaseModel, Field
 
 
@@ -18,4 +17,5 @@ class HealthResponse(BaseModel):
 class ReadinessResponse(BaseModel):
     ready: bool = Field(..., description="Readiness state for traffic ingestion")
     environment: str = Field(..., description="Active environment name")
-    checks: Dict[str, str] = Field(..., description="Component readiness statuses")
+    checks: dict[str, str] = Field(..., description="Component readiness statuses")
+

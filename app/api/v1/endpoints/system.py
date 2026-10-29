@@ -2,7 +2,7 @@
 System Diagnostics & Dynamic Environment Switcher Endpoint.
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 from app.api.deps import SettingsDep
 from app.core.config import reload_settings
 from app.core.environment import (
@@ -20,6 +20,7 @@ from app.schemas.system import (
 )
 
 router = APIRouter(prefix="/system", tags=["System & Environment"])
+
 
 
 @router.get(
@@ -45,12 +46,6 @@ async def get_system_configuration(settings: SettingsDep) -> StandardResponse[Sy
         cors_origins=settings.CORS_ORIGINS,
         database_url_masked=mask_sensitive_value(settings.DATABASE_URL, 12),
         redis_url_masked=mask_sensitive_value(settings.REDIS_URL, 6),
-        agent_max_concurrent_tasks=settings.AGENT_MAX_CONCURRENT_TASKS,
-        agent_execution_timeout_seconds=settings.AGENT_EXECUTION_TIMEOUT_SECONDS,
-        agent_mock_external_apis=settings.AGENT_MOCK_EXTERNAL_APIS,
-        enable_agent_telemetry=settings.ENABLE_AGENT_TELEMETRY,
-        llm_model=settings.LLM_MODEL,
-        llm_api_key_masked=mask_sensitive_value(settings.LLM_API_KEY, 4),
     )
     return StandardResponse(success=True, data=data)
 
@@ -64,12 +59,11 @@ async def get_system_configuration(settings: SettingsDep) -> StandardResponse[Sy
 )
 async def swap_environment_runtime(payload: EnvSwitchRequest) -> StandardResponse[EnvSwitchResponse]:
     previous_env = get_active_environment().value
-    target_env_str = payload.environment.strip().lower()
-
-    if target_env_str not in ("dev", "prod"):
-        target_env = EnvironmentType.DEV if "dev" in target_env_str else EnvironmentType.PROD
-    else:
-        target_env = EnvironmentType(target_env_str)
+    match payload.environment.strip().lower():
+        case "prod" | "production":
+            target_env = EnvironmentType.PROD
+        case _:
+            target_env = EnvironmentType.DEV
 
     # Swap active environment in memory and reload settings from disk
     set_active_environment(target_env)

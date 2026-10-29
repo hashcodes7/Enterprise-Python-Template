@@ -8,7 +8,7 @@ or `.env.prod`, as determined by `app.core.environment`.
 
 import json
 from functools import lru_cache
-from typing import Any, List
+from typing import Any
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -29,7 +29,7 @@ class AppSettings(BaseSettings):
     # Core Application Attributes
     # -------------------------------------------------------------------------
     APP_ENV: str = Field(default=EnvironmentType.DEV.value, description="Active environment name (dev/prod)")
-    APP_NAME: str = Field(default="Multi-Agent Business Operations Platform", description="Application Title")
+    APP_NAME: str = Field(default="Enterprise FastAPI Backend", description="Application Title")
     APP_VERSION: str = Field(default="1.0.0", description="Semantic service version")
     DEBUG: bool = Field(default=False, description="Debug mode toggle")
     LOG_LEVEL: str = Field(default="INFO", description="Standard logging level")
@@ -41,12 +41,13 @@ class AppSettings(BaseSettings):
     # Security, Auth & CORS
     # -------------------------------------------------------------------------
     SECRET_KEY: str = Field(..., description="Cryptographic secret key for signing")
+    ALGORITHM: str = Field(default="HS256", description="JWT signing algorithm")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, description="JWT lifetime in minutes")
-    CORS_ORIGINS: List[str] = Field(default=["*"], description="Allowed CORS origin domains")
+    CORS_ORIGINS: list[str] = Field(default=["*"], description="Allowed CORS origin domains")
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
-    def assemble_cors_origins(cls, v: Any) -> List[str]:
+    def assemble_cors_origins(cls, v: Any) -> list[str]:
         if isinstance(v, str):
             try:
                 parsed = json.loads(v)
@@ -62,22 +63,9 @@ class AppSettings(BaseSettings):
     # Storage & Cache
     # -------------------------------------------------------------------------
     DATABASE_URL: str = Field(..., description="Asynchronous database connection URI")
+    DB_ECHO: bool = Field(default=False, description="Enable SQLAlchemy engine SQL echoing")
     REDIS_URL: str = Field(default="redis://127.0.0.1:6379/0", description="Redis connection URI")
 
-    # -------------------------------------------------------------------------
-    # Multi-Agent Operations Parameters
-    # -------------------------------------------------------------------------
-    AGENT_MAX_CONCURRENT_TASKS: int = Field(default=10, description="Max parallel agent execution workers")
-    AGENT_EXECUTION_TIMEOUT_SECONDS: int = Field(default=120, description="Max execution timeout per agent run")
-    AGENT_MOCK_EXTERNAL_APIS: bool = Field(default=False, description="Mock external services in dev sandbox")
-    ENABLE_AGENT_TELEMETRY: bool = Field(default=True, description="Ship distributed agent tracing metrics")
-
-    # -------------------------------------------------------------------------
-    # External Integrations
-    # -------------------------------------------------------------------------
-    LLM_API_KEY: str = Field(..., description="LLM provider authentication token")
-    LLM_MODEL: str = Field(default="gpt-4o", description="Default foundation model for reasoning agents")
-    SLACK_WEBHOOK_URL: str = Field(default="", description="Operational notifications webhook")
 
     # -------------------------------------------------------------------------
     # Helper Properties

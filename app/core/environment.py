@@ -1,7 +1,7 @@
 """
 Environment Switcher & Resolution Module.
 ==============================================================================
-MULTI-AGENT BUSINESS OPERATIONS PLATFORM
+ENTERPRISE FASTAPI BACKEND
 
 HOW TO SWAP VARIABLES BETWEEN DEV AND PROD:
 ------------------------------------------------------------------------------
@@ -18,11 +18,11 @@ Option 2 (System Environment Variable Override):
 """
 
 import os
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 
-class EnvironmentType(str, Enum):
+class EnvironmentType(StrEnum):
     """Supported deployment environments."""
     DEV = "dev"
     PROD = "prod"
@@ -42,18 +42,19 @@ PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent.parent
 
 def get_active_environment() -> EnvironmentType:
     """
-    Resolve the current environment type.
+    Resolve the current environment type using modern pattern matching.
     Order of precedence:
     1. System environment variable 'APP_ENV' (if explicitly defined)
     2. The `ACTIVE_ENVIRONMENT` toggle declared in this file
     """
     env_from_os = os.getenv("APP_ENV", "").strip().lower()
-    if env_from_os in (EnvironmentType.DEV.value, "development"):
-        return EnvironmentType.DEV
-    elif env_from_os in (EnvironmentType.PROD.value, "production"):
-        return EnvironmentType.PROD
-
-    return ACTIVE_ENVIRONMENT
+    match env_from_os:
+        case "dev" | "development":
+            return EnvironmentType.DEV
+        case "prod" | "production":
+            return EnvironmentType.PROD
+        case _:
+            return ACTIVE_ENVIRONMENT
 
 
 def get_env_file_path(env: EnvironmentType | None = None) -> Path:
@@ -63,12 +64,11 @@ def get_env_file_path(env: EnvironmentType | None = None) -> Path:
     """
     target_env = env or get_active_environment()
 
-    if target_env == EnvironmentType.PROD:
-        target_path = PROJECT_ROOT / ".env.prod"
-    else:
-        target_path = PROJECT_ROOT / ".env.dev"
-
-    return target_path
+    match target_env:
+        case EnvironmentType.PROD:
+            return PROJECT_ROOT / ".env.prod"
+        case _:
+            return PROJECT_ROOT / ".env.dev"
 
 
 def set_active_environment(new_env: EnvironmentType | str) -> None:
@@ -81,3 +81,4 @@ def set_active_environment(new_env: EnvironmentType | str) -> None:
         new_env = EnvironmentType(new_env.lower())
     ACTIVE_ENVIRONMENT = new_env
     os.environ["APP_ENV"] = new_env.value
+

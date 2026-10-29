@@ -1,12 +1,13 @@
 """
 Enterprise FastAPI Application Entrypoint.
 ==============================================================================
-Multi-Agent Business Operations Platform
+Production-ready application factory, lifespan management, middleware pipeline,
+and router aggregation for Enterprise FastAPI Backend.
 ==============================================================================
 """
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -16,12 +17,13 @@ from app.core.config import get_settings
 from app.core.environment import get_active_environment, get_env_file_path
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import log_startup_banner, setup_logging
+from app.db.session import close_db
 from app.middlewares.process_time import ProcessTimeMiddleware
 from app.middlewares.request_id import RequestIdMiddleware
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     Application lifespan context manager.
     Handles startup configuration checks and graceful teardown.
@@ -46,6 +48,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Initialized application in [{settings.APP_ENV.upper()}] mode successfully.")
     yield
     logger.info("Initiating graceful application shutdown.")
+    await close_db()
 
 
 def create_application() -> FastAPI:
@@ -58,7 +61,7 @@ def create_application() -> FastAPI:
     app = FastAPI(
         title=settings.APP_NAME,
         version=settings.APP_VERSION,
-        description="Production Enterprise Backend for Multi-Agent Business Operations Platform",
+        description="Enterprise Production-Ready FastAPI Backend",
         docs_url="/docs" if (settings.DEBUG or settings.is_development) else "/docs",
         redoc_url="/redoc" if (settings.DEBUG or settings.is_development) else None,
         openapi_url="/openapi.json",
